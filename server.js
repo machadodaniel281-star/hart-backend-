@@ -1,70 +1,28 @@
-/**
- * HART Tampa Micro-Backend
- * Exposes: GET /hart/vehicles | /hart/eta | /hart/routes | /hart/stops
- * Deploy: Railway / Render (Node.js 18+)
- */
+import express from "express";
+import cors from "cors";
 
-const express = require('express');
-const cors    = require('cors');
-const { loadGTFS }  = require('./src/gtfs');
-const { getVehicles } = require('./src/vehicles');
-const { getETA }    = require('./src/eta');
-const { getRoutes } = require('./src/routes');
-const { getStops }  = require('./src/stops');
-
-const app  = express();
-const PORT = process.env.PORT || 8080;
-
+const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ── Health ────────────────────────────────────────────────────────────────
-
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', service: 'hart-backend', timestamp: Date.now() });
+// Ruta principal para que Railway pase el healthcheck
+app.get("/", (req, res) => {
+  res.send("Backend funcionando correctamente ✔");
 });
 
-// ── Vehicles ──────────────────────────────────────────────────────────────
-
-app.get('/hart/vehicles', async (req, res) => {
-  const vehicles = await getVehicles();
-  res.json({ vehicles, count: vehicles.length, agency: 'HART', timestamp: Date.now() });
+// Ruta de healthcheck explícita (Railway la ama)
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
 });
 
-// ── ETA ───────────────────────────────────────────────────────────────────
-
-app.get('/hart/eta', async (req, res) => {
-  const stopId = req.query.stopId;
-  if (!stopId) return res.status(400).json({ error: 'stopId query param required' });
-  const data = await getETA(stopId);
-  res.json(data);
+// Ejemplo de ruta (puedes borrar o modificar)
+app.get("/api/test", (req, res) => {
+  res.json({ message: "API funcionando" });
 });
 
-// ── Routes ────────────────────────────────────────────────────────────────
+// Puerto dinámico para Railway
+const PORT = process.env.PORT || 3000;
 
-app.get('/hart/routes', (req, res) => {
-  res.json(getRoutes());
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
-
-// ── Stops ─────────────────────────────────────────────────────────────────
-
-app.get('/hart/stops', (req, res) => {
-  res.json(getStops());
-});
-
-// ── Boot ──────────────────────────────────────────────────────────────────
-
-async function boot() {
-  try {
-    console.log('[HART] Loading GTFS static data...');
-    await loadGTFS();
-  } catch (e) {
-    console.error('[HART] GTFS load failed (will retry in 12h):', e.message);
-  }
-
-  app.listen(PORT, () => {
-    console.log(`[HART] Server running on port ${PORT}`);
-  });
-}
-
-boot();
