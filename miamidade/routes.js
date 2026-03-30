@@ -1,8 +1,7 @@
-
 const express = require("express");
 const router = express.Router();
-const fetch = require("node-fetch");
 
+// Node 18+ y 22 ya traen fetch nativo
 router.get("/bus-locations", async (req, res) => {
   try {
     const url = "https://www.miamidade.gov/transit/WebServices/BusTracker.svc/GetBusLocations";
