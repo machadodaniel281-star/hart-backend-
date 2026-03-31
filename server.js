@@ -6,28 +6,47 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Miami-Dade Routes (GTFS)
-const miamiRoutes = require("./miamidade/routes");
-app.use("/miamidade", miamiRoutes);
+// =========================
+//  IMPORTAR MÓDULOS EXISTENTES
+// =========================
+const broward = require("./broward/routes");
+const palmbeach = require("./palmbeach/routes");
+const tampa = require("./tampa/routes");
+const vehicles = require("./vehicles/routes");
+const miamidadeRealtime = require("./miamidade/realtime/routes");
 
-// Miami-Dade WCF (Web Services)
-const miamiWCF = require("./miamidade_wcf/routes");
-app.use("/miamidade-wcf", miamiWCF);
+// =========================
+//  ⭐ IMPORTAR MIAMI‑DADE GTFS (NUEVO)
+// =========================
+const miamidadeGtfs = require("./miamidade_gtfs/routes");
 
-// Default route
+// =========================
+//  MONTAR RUTAS
+// =========================
+app.use("/broward", broward);
+app.use("/palmbeach", palmbeach);
+app.use("/tampa", tampa);
+app.use("/vehicles", vehicles);
+app.use("/miamidade", miamidadeRealtime);
+
+// ⭐ RUTA NUEVA — MIAMI‑DADE GTFS
+app.use("/miamidade-gtfs", miamidadeGtfs);
+
+// =========================
+//  ROOT
+// =========================
 app.get("/", (req, res) => {
-  res.json({ message: "Backend funcionando correctamente" });
+  res.json({
+    success: true,
+    message: "HART Backend Running",
+    updatedAt: new Date().toISOString()
+  });
 });
 
-// Healthcheck for Railway
-app.get("/health", (req, res) => {
-  res.status(200).send("OK");
-});
-
-// Puerto obligatorio de Railway
+// =========================
+//  SERVER
+// =========================
 const PORT = process.env.PORT || 3000;
-
-// Iniciar servidor
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
+  console.log(`Backend running on port ${PORT}`);
 });
