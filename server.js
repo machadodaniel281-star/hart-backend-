@@ -6,9 +6,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Miami-Dade Routes
+// Miami-Dade Routes (GTFS)
 const miamiRoutes = require("./miamidade/routes");
 app.use("/miamidade", miamiRoutes);
+
+// Miami-Dade WCF (Web Services)
+const miamiWCF = require("./miamidade_wcf/routes");
+app.use("/miamidade-wcf", miamiWCF);
 
 // Default route
 app.get("/", (req, res) => {
