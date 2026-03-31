@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-// Helper to format responses
+// Helper para respuestas limpias
 function success(data) {
   return {
     success: true,
@@ -17,46 +17,58 @@ function failure(error) {
   };
 }
 
-// GET /routes
+// Función para convertir XML → JSON
+function extractJsonFromXml(xml) {
+  const jsonString = xml.replace(/<[^>]+>/g, "").trim();
+  return JSON.parse(jsonString);
+}
+
+/* ============================
+   GET /routes
+   ============================ */
 router.get("/routes", async (req, res) => {
   try {
     const url = "https://www.miamidade.gov/transit/WebServices/BusTracker.svc/GetRoutes";
     const response = await fetch(url);
-    const text = await response.text();
+    const xml = await response.text();
 
-    const json = JSON.parse(text);
-    res.json(success(json));
+    const data = extractJsonFromXml(xml);
+    res.json(success(data));
   } catch (err) {
     res.json(failure(err));
   }
 });
 
-// GET /vehicles
+/* ============================
+   GET /vehicles
+   ============================ */
 router.get("/vehicles", async (req, res) => {
   try {
     const url = "https://www.miamidade.gov/transit/WebServices/BusTracker.svc/GetBusPositions";
     const response = await fetch(url);
-    const text = await response.text();
+    const xml = await response.text();
 
-    const json = JSON.parse(text);
-    res.json(success(json));
+    const data = extractJsonFromXml(xml);
+    res.json(success(data));
   } catch (err) {
     res.json(failure(err));
   }
 });
 
-// GET /eta?stop=1234
+/* ============================
+   GET /eta?stop=1234
+   ============================ */
 router.get("/eta", async (req, res) => {
   try {
     const stop = req.query.stop;
-    if (!stop) return res.json({ success: false, error: "Missing stop parameter" });
+    if (!stop) return res.json(failure("Missing stop parameter"));
 
     const url = `https://www.miamidade.gov/transit/WebServices/BusTracker.svc/GetPredictions?BusStopID=${stop}`;
     const response = await fetch(url);
-    const text = await response.text();
+    const xml = await response.text();
 
-    const json = JSON.parse(text);
-    res.json(success(json));
+    const data = extractJsonFromXml(xml);
+    res.json(success(data));
   } catch (err) {
     res.json(failure(err));
   }
