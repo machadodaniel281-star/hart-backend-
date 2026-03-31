@@ -23,13 +23,19 @@ function extractJsonFromXml(xml) {
   return JSON.parse(jsonString);
 }
 
+// Headers necesarios para que Miami‑Dade NO devuelva “Web Error”
+const MD_HEADERS = {
+  "User-Agent": "Mozilla/5.0",
+  "Accept": "application/json, text/plain, */*"
+};
+
 /* ============================
    GET /routes
    ============================ */
 router.get("/routes", async (req, res) => {
   try {
     const url = "https://www.miamidade.gov/transit/WebServices/BusTracker.svc/GetRoutes";
-    const response = await fetch(url);
+    const response = await fetch(url, { headers: MD_HEADERS });
     const xml = await response.text();
 
     const data = extractJsonFromXml(xml);
@@ -45,7 +51,7 @@ router.get("/routes", async (req, res) => {
 router.get("/vehicles", async (req, res) => {
   try {
     const url = "https://www.miamidade.gov/transit/WebServices/BusTracker.svc/GetBusPositions";
-    const response = await fetch(url);
+    const response = await fetch(url, { headers: MD_HEADERS });
     const xml = await response.text();
 
     const data = extractJsonFromXml(xml);
@@ -64,7 +70,7 @@ router.get("/eta", async (req, res) => {
     if (!stop) return res.json(failure("Missing stop parameter"));
 
     const url = `https://www.miamidade.gov/transit/WebServices/BusTracker.svc/GetPredictions?BusStopID=${stop}`;
-    const response = await fetch(url);
+    const response = await fetch(url, { headers: MD_HEADERS });
     const xml = await response.text();
 
     const data = extractJsonFromXml(xml);
