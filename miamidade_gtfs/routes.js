@@ -34,5 +34,5 @@ router.get("/test", (req, res) => {
 // GET /miamidade-gtfs/vehicles
 // ============================
 router.get("/vehicles", async (req, res) => {
-  ...
+
 });
