@@ -20,4 +20,6 @@ app.get('/health', (req, res) => {
   res.json({ status: "ok" });
 });
   res.json({ status: "ok" });
-
+app.get('/health', (req, res) => {
+  res.json({ status: "ok" });
+});
