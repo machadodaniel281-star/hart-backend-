@@ -19,4 +19,5 @@ app.listen(PORT, "0.0.0.0", () => {
 app.get('/health', (req, res) => {
   res.json({ status: "ok" });
 });
+  res.json({ status: "ok" });
 
