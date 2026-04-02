@@ -6,12 +6,13 @@ const fetch = (...args) =>
 
 router.get("/bus-locations", async (req, res) => {
   try {
-    const url = "http://api.gohart.org/gtfs-realtime/VehiclePositions.pb";
+    // ENDPOINT REAL DE HART (OneBusAway Tampa)
+    const url = "https://api.tampa.onebusaway.org/api/gtfs_realtime/vehicle-positions";
 
     const response = await fetch(url);
     const buffer = await response.arrayBuffer();
 
-    // Detectar si HART devolvió HTML o error
+    // Detectar si devolvió HTML o error
     const text = new TextDecoder().decode(buffer);
     if (
       text.startsWith("<") ||
