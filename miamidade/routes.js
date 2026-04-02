@@ -10,6 +10,23 @@ router.get("/bus-locations", async (req, res) => {
 
     const response = await fetch(url);
     const buffer = await response.arrayBuffer();
+
+    // Detectar si Miami-Dade devolvió HTML o un 404 en vez de .pb
+    const text = new TextDecoder().decode(buffer);
+    if (
+      text.startsWith("<") ||
+      text.includes("html") ||
+      text.includes("404") ||
+      text.includes("Not Found")
+    ) {
+      return res.json({
+        success: false,
+        error: "Miami-Dade feed is temporarily unavailable",
+        raw: text.slice(0, 200)
+      });
+    }
+
+    // Decodificar el feed GTFS-Realtime
     const feed = GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(
       new Uint8Array(buffer)
     );
