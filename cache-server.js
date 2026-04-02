@@ -20,23 +20,23 @@ async function updateCache() {
   }
 }
 
-// Actualizar cada 10 segundos
-setInterval(updateCache, 10000);
-updateCache();
-
-// Endpoint para tu app
-app.get("/miami/cache", (req, res) => {
+// Endpoint para obtener el cache
+app.get("/cache", (req, res) => {
   if (!lastGoodData) {
-    return res.status(503).json({ error: "No hay datos todavía" });
+    return res.status(503).json({ error: "Cache no disponible" });
   }
   res.set("Content-Type", "application/octet-stream");
   res.send(lastGoodData);
 });
 
-// Healthcheck perfecto
+// Healthcheck interno (no público)
 app.get("/health", (req, res) => {
   res.json({ status: "ok", lastUpdate });
 });
 
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log("Cache server escuchando en", PORT));
+// Iniciar el ciclo de actualización
+setInterval(updateCache, 10000);
+updateCache();
+
+// IMPORTANTE: ESTE ARCHIVO NO DEBE ESCUCHAR PUERTOS EN RAILWAY
+module.exports = app;
