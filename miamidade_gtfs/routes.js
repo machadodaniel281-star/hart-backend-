@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
 router.get("/bus-locations", async (req, res) => {
   try {
     const url = "https://miami-json-proxy.vercel.app/buses";
-    const response = await fetch(url);
+
+    // fetch nativo usando globalThis
+    const response = await globalThis.fetch(url);
     const data = await response.json();
 
     res.json({
