@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
 router.get("/bus-locations", async (req, res) => {
   try {
