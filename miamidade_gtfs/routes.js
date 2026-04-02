@@ -1,38 +1,20 @@
 const express = require("express");
 const router = express.Router();
-const fetch = require("node-fetch");
-const GtfsRealtimeBindings = require("gtfs-realtime-bindings");
 
-// Helpers
-function success(data) {
-  return {
-    success: true,
-    updatedAt: new Date().toISOString(),
-    data
-  };
-}
+router.get("/bus-locations", async (req, res) => {
+  try {
+    const url = "https://miami-json-proxy.vercel.app/buses";
+    const response = await fetch(url);
+    const data = await response.json();
 
-// updated 2
-
-function failure(error) {
-  return {
-    success: false,
-    error: error.toString()
-  };
-}
-
-const FEED_URL = process.env.MIAMIDADE_GTFS_RT_VEHICLES_URL;
-
-// ============================
-// RUTA DE PRUEBA
-// ============================
-router.get("/test", (req, res) => {
-  res.json({ ok: true });
+    res.json({
+      success: true,
+      updatedAt: new Date().toISOString(),
+      buses: data || []
+    });
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  }
 });
 
-// ============================
-// GET /miamidade-gtfs/vehicles
-// ============================
-router.get("/vehicles", async (req, res) => {
-
-});
+module.exports = router;
