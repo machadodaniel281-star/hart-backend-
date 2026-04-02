@@ -1,19 +1,12 @@
 const express = require("express");
 const app = express();
 
-const PORT = process.env.PORT || 3000;
+const miamiRoutes = require("./miamidade/routes");
 
-// Cargar tu módulo GTFS
-const miamiRoutes = require("./miamidade_gtfs/routes");
-app.use("/miami", miamiRoutes);
+app.use("/miamidade", miamiRoutes);
 
-// Healthcheck obligatorio para Railway
-app.get("/health", (req, res) => {
-  res.status(200).json({ status: "ok" });
+app.get("/health", (req, res) => res.send("OK"));
+
+app.listen(process.env.PORT || 3000, () => {
+  console.log("Backend running");
 });
-
-// Iniciar servidor en 0.0.0.0 (OBLIGATORIO PARA RAILWAY)
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
